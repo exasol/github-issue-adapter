@@ -1,11 +1,7 @@
-from github import Github
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pyexasol
 import os
-
-
-def is_pull_request(issue):
-    return issue.pull_request is not None
+import graphql
 
 
 def lambda_handler(event, context):
@@ -16,32 +12,33 @@ def lambda_handler(event, context):
     def get_last_update():
         result: list = exasol.export_to_list("SELECT MAX(UPDATED) as last_update FROM EXASOL_JABR.ISSUES")
         if len(result[0]) == 0:
-            return datetime.now() - timedelta(days=100)
+            return datetime.now() - timedelta(days=365*3)
         else:
             last_update_str = result[0][0]
             return datetime.strptime(last_update_str, '%Y-%m-%d %H:%M:%S.%f')
 
     last_update = get_last_update()
-
-    g = Github(os.environ['GITHUB_TOKEN'])
-    org = g.get_organization("exasol")
-    repos = org.get_repos()
-    rows = []
+    repos = graphql.list_repositories()
     for repo in repos:
-        issues = repo.get_issues(state='all', since=last_update)
+        print(repo)
+        issues = graphql.get_issues_of_repo(repo, last_update)
+        rows = []
         for issue in issues:
-            if issue.updated_at <= last_update:
-                continue
-            if is_pull_request(issue):
-                continue
-            first_label = ''
-            labels = issue.get_labels()
-            if labels.totalCount > 0:
-                first_label = labels[0].name
-
-            closer = ''
-            if issue.closed_by is not None:
-                closer = issue.closed_by.login
-            rows.append([repo.name, issue.number, issue.title, issue.closed_at, closer, first_label, issue.updated_at,
+            type_label = get_type_label(issue)
+            rows.append([issue.repo, issue.number, issue.title, issue.closed_at, type_label, issue.updated_at,
                          issue.created_at])
-    exasol.import_from_iterable(rows, (os.environ['EXASOL_SCHEMA'], os.environ['EXASOL_TABLE']))
+        exasol.import_from_iterable(rows, (os.environ['EXASOL_SCHEMA'], os.environ['EXASOL_TABLE']))
+
+
+def get_type_label(issue):
+    def is_type_label(label: str) -> bool:
+        return ":" not in label
+
+    type_labels = list(filter(is_type_label, issue.labels))
+    if not len(type_labels) == 0:
+        return type_labels[0]
+    else:
+        return ""
+
+
+lambda_handler(None, None)
