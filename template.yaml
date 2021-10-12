@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  githubIssueAdapter
+
+  Sample SAM Template for githubIssueAdapter
+
+Globals:
+  Function:
+    Timeout: 900
+
+Parameters:
+  GithubToken:
+    Type: 'String'
+    NoEcho: true
+  ExasolHost:
+    Type: 'String'
+  ExasolUser:
+    Type: 'String'
+  ExasolPass:
+    Type: 'String'
+    NoEcho: true
+  ExasolSchema:
+    Type: 'String'
+  ExasolTable:
+    Type: 'String'
+
+Resources:
+  GithubIssueAdapter:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: github_issue_adapter
+      Handler: adapter/app.lambda_handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          GITHUB_TOKEN: !Ref GithubToken
+          EXASOL_HOST: !Ref ExasolHost
+          EXASOL_USER: !Ref ExasolUser
+          EXASOL_PASS: !Ref ExasolPass
+          EXASOL_SCHEMA: !Ref ExasolSchema
+          EXASOL_TABLE: !Ref ExasolTable
+      Events:
+        MinutelyTrigger:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 hour)
+            Description: Hourly trigger for the adapter
+            Enabled: True
