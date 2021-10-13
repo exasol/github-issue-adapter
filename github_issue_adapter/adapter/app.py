@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import pyexasol
 import os
-from github_issue_adapter.adapter import graphql
+from adapter import graphql
 
 
 def lambda_handler(event, context):

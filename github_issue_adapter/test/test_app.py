@@ -1,6 +1,6 @@
 import unittest
 
-from github_issue_adapter.adapter import app
+from adapter import app
 
 
 class AppTest(unittest.TestCase):

@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 import os
 from string import Template
@@ -24,7 +26,7 @@ def run_query(graphql_query: str):
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, graphql_query))
 
 
-def list_repositories() -> list[str]:
+def list_repositories() -> List[str]:
     repos = list()
     query = Template("""
     query { 
@@ -58,7 +60,7 @@ def list_repositories() -> list[str]:
 
 class Issue:
     def __init__(self, repo: str, number: int, title: str, created_at: datetime, updated_at: datetime,
-                 closed_at: datetime, labels: list[str]):
+                 closed_at: datetime, labels: List[str]):
         self.repo = repo
         self.number = number
         self.title = title
@@ -72,8 +74,8 @@ class Issue:
             .format(self.repo, self.number, self.title, self.created_at, self.updated_at, self.closed_at, self.labels)
 
 
-def get_issues_of_repo(repo_name: str, since: datetime) -> list[Issue]:
-    issues: list[Issue] = list()
+def get_issues_of_repo(repo_name: str, since: datetime) -> List[Issue]:
+    issues: List[Issue] = list()
     query_template = Template("""
     query { 
       repository(owner:"$org" name:"$repo"){
@@ -130,7 +132,7 @@ def read_issue(repo: str, node) -> Issue:
 
 
 def read_labels(node):
-    labels: list[str] = list()
+    labels: List[str] = list()
     for label_edge in node["labels"]["edges"]:
         labels.append(label_edge["node"]["name"])
     return labels
