@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import pyexasol
 import os
-import graphql
+from github_issue_adapter.adapter import graphql
 
 
 def lambda_handler(event, context):
@@ -39,6 +39,3 @@ def get_type_label(issue):
         return type_labels[0]
     else:
         return ""
-
-
-lambda_handler(None, None)

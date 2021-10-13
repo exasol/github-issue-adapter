@@ -105,12 +105,13 @@ def get_issues_of_repo(repo_name: str, since: datetime) -> list[Issue]:
     cursor = None
     while True:
         cursor_string = "null" if cursor is None else ('"' + cursor + '"')
-        query = query_template.substitute(org=org, repo=repo_name, cursor=cursor_string, since=render_date(since))
+        date = render_date(since)
+        query = query_template.substitute(org=org, repo=repo_name, cursor=cursor_string, since=date)
         response = run_query(query)
         for each in response["data"]["repository"]["issues"]["edges"]:
             issue = read_issue(repo_name, each["node"])
             if issue.updated_at <= since:
-                raise Exception("Strange, the github filter does not work as expected")
+                continue
             issues.append(issue)
         page_info = response["data"]["repository"]["issues"]["pageInfo"]
         if not page_info["hasNextPage"]:
@@ -141,4 +142,4 @@ def parse_date(iso_timestamp: str) -> datetime:
 
 
 def render_date(date: datetime) -> str:
-    return date.isoformat()[:-3] + 'Z'
+    return date.replace(microsecond=0).isoformat() + 'Z'
