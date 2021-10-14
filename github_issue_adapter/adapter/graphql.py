@@ -15,15 +15,17 @@ def get_config_value(config_name: str) -> str:
         return os.environ[config_name]
 
 
-headers = {"Authorization": "token " + get_config_value("GITHUB_TOKEN")}
-
-
 def run_query(graphql_query: str):
+    headers = {"Authorization": "token " + get_config_value("GITHUB_TOKEN")}
     request = requests.post('https://api.github.com/graphql', json={'query': graphql_query}, headers=headers)
     if request.status_code == 200:
         return request.json()
     else:
-        raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, graphql_query))
+
+        raise Exception(
+            "Filed to run GitHub graphql query. Status code: {}  Reason: '{}' Query: {}".format(request.status_code,
+                                                                                                request.reason,
+                                                                                                graphql_query))
 
 
 def list_repositories() -> List[str]:
@@ -110,16 +112,21 @@ def get_issues_of_repo(repo_name: str, since: datetime) -> List[Issue]:
         date = render_date(since)
         query = query_template.substitute(org=org, repo=repo_name, cursor=cursor_string, since=date)
         response = run_query(query)
-        for each in response["data"]["repository"]["issues"]["edges"]:
-            issue = read_issue(repo_name, each["node"])
-            if issue.updated_at <= since:
-                continue
-            issues.append(issue)
-        page_info = response["data"]["repository"]["issues"]["pageInfo"]
+        page_info = read_issues(issues, repo_name, response, since)
         if not page_info["hasNextPage"]:
             break
         cursor = page_info["endCursor"]
     return issues
+
+
+def read_issues(issues, repo_name, response, since):
+    for each in response["data"]["repository"]["issues"]["edges"]:
+        issue = read_issue(repo_name, each["node"])
+        if issue.updated_at <= since:
+            continue
+        issues.append(issue)
+    page_info = response["data"]["repository"]["issues"]["pageInfo"]
+    return page_info
 
 
 def read_issue(repo: str, node) -> Issue:
