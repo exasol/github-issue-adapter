@@ -44,6 +44,6 @@ Resources:
         MinutelyTrigger:
           Type: Schedule
           Properties:
-            Schedule: rate(1 hour)
+            Schedule: rate(15 minutes)
             Description: Hourly trigger for the adapter
             Enabled: True
