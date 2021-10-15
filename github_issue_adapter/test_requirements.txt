@@ -1,3 +1,4 @@
 PyYAML
 PyGithub
 pytest
+pytest-cov

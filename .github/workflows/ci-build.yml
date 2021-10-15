@@ -25,7 +25,7 @@ jobs:
           echo "github_token: ${{ secrets.EXA_CI_2_TOKEN_FOR_CREATING_AND_DELETING_ISSUES }}" > ./test-config.yml
 
       - name: Run tests
-        run: pytest
+        run: pytest -v --cov --cov-report=xml --cov-report=html
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

@@ -3,3 +3,6 @@ deploy.sh
 samconfig.toml
 .idea
 test-config.yml
+htmlcov
+coverage.xml
+.coverage
