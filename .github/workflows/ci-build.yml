@@ -20,6 +20,10 @@ jobs:
           pip install -r github_issue_adapter/requirements.txt
           pip install -r github_issue_adapter/test_requirements.txt
 
+      - name: Create Test Config
+        run: |
+          echo "github_token: ${{ secrets.EXA_CI_2_TOKEN_FOR_CREATING_AND_DELETING_ISSUES }}" > ./test-config.yml
+
       - name: Run tests
         run: pytest
 
