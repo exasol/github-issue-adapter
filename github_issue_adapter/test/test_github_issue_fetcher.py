@@ -20,7 +20,7 @@ class GitHubIssueFetcherTest(unittest.TestCase):
     def test_list_repositories(self):
         issue_fetcher = GithubIssuesFetcher(TEST_REPO_ORG, self.test_config.github_token())
         repositories = issue_fetcher.list_repositories()
-        self.assertIn("github-issue-adapter", repositories)
+        self.assertIn(TEST_REPO_NAME, repositories)
 
     def test_list_issues(self):
         issue_fetcher = GithubIssuesFetcher(TEST_REPO_ORG, self.test_config.github_token())
