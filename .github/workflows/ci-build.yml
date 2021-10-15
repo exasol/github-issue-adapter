@@ -17,8 +17,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r github_issie_adapter/requirements.txt
-          pip install -r github_issie_adapter/test_requirements.txt
+          pip install -r github_issue_adapter/requirements.txt
+          pip install -r github_issue_adapter/test_requirements.txt
 
       - name: Run tests
         run: pytest
