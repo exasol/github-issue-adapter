@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, timezone
 import pyexasol
 import os
-from adapter import graphql
+from adapter.github_issue_fetcher import GithubIssuesFetcher
 
 
 def lambda_handler(event, context):
-    exasol = pyexasol.connect(dsn=os.environ['EXASOL_HOST'], user=os.environ['EXASOL_USER'],
-                              password=os.environ['EXASOL_PASS'])
+    exasol = pyexasol.connect(dsn=get_config_value('EXASOL_HOST'), user=get_config_value('EXASOL_USER'),
+                              password=get_config_value('EXASOL_PASS'))
     exasol.execute("ALTER SESSION SET  TIME_ZONE = 'UTC';")
 
     def get_last_update():
@@ -18,15 +18,16 @@ def lambda_handler(event, context):
             return datetime.strptime(last_update_str, '%Y-%m-%d %H:%M:%S.%f')
 
     last_update = get_last_update()
-    repos = graphql.list_repositories()
+    issue_fetcher = GithubIssuesFetcher("exasol", get_config_value("GITHUB_TOKEN"))
+    repos = issue_fetcher.list_repositories()
     for repo in repos:
-        issues = graphql.get_issues_of_repo(repo, last_update)
+        issues = issue_fetcher.get_issues_of_repo(repo, last_update)
         rows = []
         for issue in issues:
             type_label = get_type_label(issue)
             rows.append([issue.repo, issue.number, issue.title, issue.closed_at, type_label, issue.updated_at,
                          issue.created_at])
-        exasol.import_from_iterable(rows, (os.environ['EXASOL_SCHEMA'], os.environ['EXASOL_TABLE']))
+        exasol.import_from_iterable(rows, (get_config_value('EXASOL_SCHEMA'), get_config_value('EXASOL_TABLE')))
 
 
 def is_type_label(label: str) -> bool:
@@ -39,3 +40,10 @@ def get_type_label(issue):
         return type_labels[0]
     else:
         return ""
+
+
+def get_config_value(config_name: str) -> str:
+    if config_name not in os.environ:
+        raise Exception("Missing required environment variable {}.".format(config_name))
+    else:
+        return os.environ[config_name]
