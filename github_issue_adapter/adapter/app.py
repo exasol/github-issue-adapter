@@ -44,6 +44,6 @@ def get_type_label(issue):
 
 def get_config_value(config_name: str) -> str:
     if config_name not in os.environ:
-        raise Exception("Missing required environment variable {}.".format(config_name))
+        raise RuntimeError("Missing required environment variable {}.".format(config_name))
     else:
         return os.environ[config_name]

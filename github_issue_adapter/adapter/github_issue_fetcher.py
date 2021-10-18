@@ -18,7 +18,7 @@ class GithubIssuesFetcher:
         if request.status_code == 200:
             return request.json()
         else:
-            raise Exception(
+            raise RuntimeError(
                 "Filed to run GitHub graphql query. Status code: {}  Reason: '{}' Query: {}".format(request.status_code,
                                                                                                     request.reason,
                                                                                                     graphql_query))
