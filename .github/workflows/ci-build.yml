@@ -1,0 +1,34 @@
+name: CI Build
+
+on:
+  push:
+
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          pip install -r github_issue_adapter/requirements.txt
+          pip install -r github_issue_adapter/test_requirements.txt
+
+      - name: Create Test Config
+        run: |
+          echo "github_token: ${{ secrets.EXA_CI_2_TOKEN_FOR_CREATING_AND_DELETING_ISSUES }}" > ./test-config.yml
+
+      - name: Run tests
+        run: pytest -v --cov --cov-report=xml --cov-report=html
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
