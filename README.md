@@ -4,7 +4,7 @@ AWS Lambda function that copies GitHub issues hourly into an Exasol table.
 
 ## Deploy
 
-This app is currently deployed int the `jb-dev` exasol AWS account.
+This app is currently deployed int the `exa-aws-pin-dev` exasol AWS account.
 
 You can deploy the app using the [AWS SAM CLI](https://aws.amazon.com/serverless/sam/):
 
