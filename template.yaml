@@ -31,7 +31,7 @@ Resources:
     Properties:
       CodeUri: github_issue_adapter
       Handler: adapter/app.lambda_handler
-      Runtime: python3.8
+      Runtime: python3.9
       Environment:
         Variables:
           GITHUB_TOKEN: !Ref GithubToken
