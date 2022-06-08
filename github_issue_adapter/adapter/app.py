@@ -6,7 +6,7 @@ import pyexasol
 from adapter.github_issue_fetcher import GithubIssuesFetcher
 
 
-def lambda_handler(event, context):
+def lambda_handler(_, _):
     schema_name = get_config_value('EXASOL_SCHEMA')
     table_name = get_config_value('EXASOL_TABLE')
     exasol = pyexasol.connect(dsn=get_config_value('EXASOL_HOST'), user=get_config_value('EXASOL_USER'),
@@ -40,7 +40,7 @@ def is_type_label(label: str) -> bool:
 
 def get_type_label(issue):
     type_labels = list(filter(is_type_label, issue.labels))
-    if not len(type_labels) == 0:
+    if len(type_labels) != 0:
         return type_labels[0]
     else:
         return ""
