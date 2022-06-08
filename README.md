@@ -15,4 +15,31 @@ sam deploy
 
 ## Usage
 
-To analyze the issues you can use SQL. As a start take a look at the queries in [queries.sql](queries.sql). 
+To analyze the issues you can use SQL. As a start take a look at the queries in [queries.sql](queries.sql).
+
+## Development
+
+Install dependencies:
+
+```shell
+pip install -r github_issue_adapter/requirements.txt
+pip install -r github_issue_adapter/test_requirements.txt
+```
+
+This will install `pytest` to export `$HOME/.local/bin`. You might need to add this to the `PATH`:
+
+```shell
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Create file `test-config.yml` with your personal GitHub access token:
+
+```yaml
+github_token: ghp_...
+```
+
+Run tests with
+
+```shell
+pytest -v --cov --cov-report=xml --cov-report=html
+````
