@@ -14,7 +14,9 @@ def lambda_handler(_, _):
     exasol.execute("ALTER SESSION SET  TIME_ZONE = 'UTC';")
 
     def get_last_update():
-        result: list = exasol.export_to_list("SELECT MAX(UPDATED) as last_update FROM " + schema_name + "." + table_name)
+        result: list = exasol.export_to_list(
+           f"SELECT MAX(UPDATED) as last_update FROM {schema_name}.{table_name}"
+        )
         if len(result[0]) == 0:
             return datetime.now() - timedelta(days=365 * 3)
         else:
