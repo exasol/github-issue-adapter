@@ -6,3 +6,5 @@ test-config.yml
 htmlcov
 coverage.xml
 .coverage
+**/__pycache__/
+.DS_Store

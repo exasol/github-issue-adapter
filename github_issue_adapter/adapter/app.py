@@ -1,16 +1,22 @@
-from datetime import datetime, timedelta, timezone
-import pyexasol
 import os
+from datetime import datetime, timedelta, timezone
+
+import pyexasol
+
 from adapter.github_issue_fetcher import GithubIssuesFetcher
 
 
-def lambda_handler(event, context):
+def lambda_handler(_, _):
+    schema_name = get_config_value('EXASOL_SCHEMA')
+    table_name = get_config_value('EXASOL_TABLE')
     exasol = pyexasol.connect(dsn=get_config_value('EXASOL_HOST'), user=get_config_value('EXASOL_USER'),
                               password=get_config_value('EXASOL_PASS'))
     exasol.execute("ALTER SESSION SET  TIME_ZONE = 'UTC';")
 
     def get_last_update():
-        result: list = exasol.export_to_list("SELECT MAX(UPDATED) as last_update FROM EXASOL_JABR.ISSUES")
+        result: list = exasol.export_to_list(
+           f"SELECT MAX(UPDATED) as last_update FROM {schema_name}.{table_name}"
+        )
         if len(result[0]) == 0:
             return datetime.now() - timedelta(days=365 * 3)
         else:
@@ -27,7 +33,7 @@ def lambda_handler(event, context):
             type_label = get_type_label(issue)
             rows.append([issue.repo, issue.number, issue.title, issue.closed_at, type_label, issue.updated_at,
                          issue.created_at])
-        exasol.import_from_iterable(rows, (get_config_value('EXASOL_SCHEMA'), get_config_value('EXASOL_TABLE')))
+        exasol.import_from_iterable(rows, (schema_name, table_name))
 
 
 def is_type_label(label: str) -> bool:
@@ -36,7 +42,7 @@ def is_type_label(label: str) -> bool:
 
 def get_type_label(issue):
     type_labels = list(filter(is_type_label, issue.labels))
-    if not len(type_labels) == 0:
+    if len(type_labels) != 0:
         return type_labels[0]
     else:
         return ""
