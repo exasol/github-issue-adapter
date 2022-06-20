@@ -22,8 +22,8 @@ To analyze the issues you can use SQL. As a start take a look at the queries in 
 Install dependencies:
 
 ```shell
-pip install -r github_issue_adapter/requirements.txt
-pip install -r github_issue_adapter/test_requirements.txt
+pip3 install -r github_issue_adapter/requirements.txt
+pip3 install -r github_issue_adapter/test_requirements.txt
 ```
 
 This will install `pytest` to export `$HOME/.local/bin`. You might need to add this to the `PATH`:
