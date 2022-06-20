@@ -26,7 +26,7 @@ pip3 install -r github_issue_adapter/requirements.txt
 pip3 install -r github_issue_adapter/test_requirements.txt
 ```
 
-This will install `pytest` to export `$HOME/.local/bin`. You might need to add this to the `PATH`:
+This will install `pytest` to `$HOME/.local/bin`. You might need to add this to the `PATH`:
 
 ```shell
 export PATH="$HOME/.local/bin:$PATH"
