@@ -69,7 +69,7 @@ class Query:
             json={"query": graphql_query},
             headers=headers,
         )
-        if not request.status_code == 200:
+        if request.status_code != 200:
             raise RuntimeError(
                 "Filed to run GitHub graphql query. Status code: {}  Reason: '{}' Query: {}".format(
                     request.status_code, request.reason, graphql_query
