@@ -4,7 +4,7 @@ import pytest
 from github import Github
 
 import testing_config
-from adapter.github import IssuesFetcher
+from adapter.github import Query
 
 TEST_REPO_ORG = "exasol"
 TEST_REPO_NAME = "testing-release-robot"
@@ -21,19 +21,19 @@ def github_client(test_config: testing_config.TestConfig):
 
 
 def test_list_repositories(test_config: testing_config.TestConfig):
-    issue_fetcher = IssuesFetcher(TEST_REPO_ORG, test_config.github_token())
-    repositories = issue_fetcher.repositories()
+    query = Query(TEST_REPO_ORG, test_config.github_token())
+    repositories = query.repositories()
     assert TEST_REPO_NAME in repositories
 
 
 def test_list_issues(test_config: testing_config.TestConfig, github_client: Github):
-    issue_fetcher = IssuesFetcher(TEST_REPO_ORG, test_config.github_token())
+    query = Query(TEST_REPO_ORG, test_config.github_token())
     test_repo = github_client.get_repo(TEST_REPO_ORG + "/" + TEST_REPO_NAME)
     test_issue_name = "Issue For Testing github-issue-adapter"
     test_issue = test_repo.create_issue(test_issue_name)
     before_creating_issue = test_issue.created_at - timedelta(seconds=1)
     try:
-        issues = issue_fetcher.issues(TEST_REPO_NAME, before_creating_issue)
+        issues = query.issues(TEST_REPO_NAME, before_creating_issue)
         issues_of_test_repo = list(
             filter(lambda issue: issue.repo == TEST_REPO_NAME, issues)
         )

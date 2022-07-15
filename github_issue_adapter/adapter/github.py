@@ -6,7 +6,7 @@ import datetime
 from adapter.issue import Issue
 
 
-class IssuesFetcher:
+class Query:
     _LIST_REPOSITORIES = Template(
         """
     query { 
@@ -103,21 +103,21 @@ class IssuesFetcher:
         cursor = None
         while True:
             cursor_string = "null" if cursor is None else ('"' + cursor + '"')
-            date = self.render_date(since)
+            date = self._render_date(since)
             query = self._LIST_ISSUES.substitute(
                 org=self.org, repo=repo_name, cursor=cursor_string, since=date
             )
             response = self._execute(query)
-            page_info = self.read_issues(_issues, repo_name, response, since)
+            page_info = self._read_issues(_issues, repo_name, response, since)
             if not page_info["hasNextPage"]:
                 break
             cursor = page_info["endCursor"]
         return _issues
 
     @classmethod
-    def read_issues(cls, issues, repo_name, response, since):
+    def _read_issues(cls, issues, repo_name, response, since):
         for each in response["data"]["repository"]["issues"]["edges"]:
-            issue = cls.read_issue(repo_name, each["node"])
+            issue = cls._read_issue(repo_name, each["node"])
             if issue.updated_at <= since:
                 continue
             issues.append(issue)
@@ -125,7 +125,7 @@ class IssuesFetcher:
         return page_info
 
     @staticmethod
-    def read_issue(repo: str, node) -> Issue:
+    def _read_issue(repo: str, node) -> Issue:
         def _parse(iso_timestamp: str) -> datetime:
             return (
                 None
@@ -154,5 +154,5 @@ class IssuesFetcher:
         )
 
     @staticmethod
-    def render_date(date: datetime) -> str:
+    def _render_date(date: datetime) -> str:
         return date.replace(microsecond=0).isoformat() + "Z"
