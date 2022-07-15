@@ -22,7 +22,7 @@ def github_client(test_config: testing_config.TestConfig):
 
 def test_list_repositories(test_config: testing_config.TestConfig):
     issue_fetcher = IssuesFetcher(TEST_REPO_ORG, test_config.github_token())
-    repositories = issue_fetcher.list_repositories()
+    repositories = issue_fetcher.repositories()
     assert TEST_REPO_NAME in repositories
 
 
@@ -33,7 +33,7 @@ def test_list_issues(test_config: testing_config.TestConfig, github_client: Gith
     test_issue = test_repo.create_issue(test_issue_name)
     before_creating_issue = test_issue.created_at - timedelta(seconds=1)
     try:
-        issues = issue_fetcher.get_issues_of_repo(TEST_REPO_NAME, before_creating_issue)
+        issues = issue_fetcher.issues(TEST_REPO_NAME, before_creating_issue)
         issues_of_test_repo = list(
             filter(lambda issue: issue.repo == TEST_REPO_NAME, issues)
         )

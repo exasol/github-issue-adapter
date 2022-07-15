@@ -22,9 +22,9 @@ def lambda_handler(event, context):
     last_update = _last_update(connection, schema, table)
     issue_fetcher = IssuesFetcher("exasol", _config("GITHUB_TOKEN"))
 
-    repositories = issue_fetcher.list_repositories()
+    repositories = issue_fetcher.repositories()
     for repository in repositories:
-        issues = issue_fetcher.get_issues_of_repo(repository, last_update)
+        issues = issue_fetcher.issues(repository, last_update)
         connection.import_from_iterable(
             (
                 [
