@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pyexasol
 
-from adapter.github_issue_fetcher import GithubIssuesFetcher
+from adapter.github import GithubIssuesFetcher
 
 
 def lambda_handler(event, context):

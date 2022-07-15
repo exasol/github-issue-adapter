@@ -4,7 +4,7 @@ import pytest
 from github import Github
 
 import testing_config
-from adapter.github_issue_fetcher import GithubIssuesFetcher
+from adapter.github import GithubIssuesFetcher
 
 TEST_REPO_ORG = "exasol"
 TEST_REPO_NAME = "testing-release-robot"
