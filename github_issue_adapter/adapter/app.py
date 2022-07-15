@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pyexasol
 
-from adapter.github import GithubIssuesFetcher
+from adapter.github import IssuesFetcher
 
 
 def lambda_handler(event, context):
@@ -20,7 +20,7 @@ def lambda_handler(event, context):
 
     connection.execute("ALTER SESSION SET  TIME_ZONE = 'UTC';")
     last_update = _last_update(connection, schema, table)
-    issue_fetcher = GithubIssuesFetcher("exasol", _config("GITHUB_TOKEN"))
+    issue_fetcher = IssuesFetcher("exasol", _config("GITHUB_TOKEN"))
 
     repositories = issue_fetcher.list_repositories()
     for repository in repositories:

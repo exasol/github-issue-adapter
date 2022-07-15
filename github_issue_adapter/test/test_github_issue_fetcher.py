@@ -4,7 +4,7 @@ import pytest
 from github import Github
 
 import testing_config
-from adapter.github import GithubIssuesFetcher
+from adapter.github import IssuesFetcher
 
 TEST_REPO_ORG = "exasol"
 TEST_REPO_NAME = "testing-release-robot"
@@ -21,13 +21,13 @@ def github_client(test_config: testing_config.TestConfig):
 
 
 def test_list_repositories(test_config: testing_config.TestConfig):
-    issue_fetcher = GithubIssuesFetcher(TEST_REPO_ORG, test_config.github_token())
+    issue_fetcher = IssuesFetcher(TEST_REPO_ORG, test_config.github_token())
     repositories = issue_fetcher.list_repositories()
     assert TEST_REPO_NAME in repositories
 
 
 def test_list_issues(test_config: testing_config.TestConfig, github_client: Github):
-    issue_fetcher = GithubIssuesFetcher(TEST_REPO_ORG, test_config.github_token())
+    issue_fetcher = IssuesFetcher(TEST_REPO_ORG, test_config.github_token())
     test_repo = github_client.get_repo(TEST_REPO_ORG + "/" + TEST_REPO_NAME)
     test_issue_name = "Issue For Testing github-issue-adapter"
     test_issue = test_repo.create_issue(test_issue_name)

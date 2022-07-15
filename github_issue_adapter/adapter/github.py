@@ -6,7 +6,7 @@ import datetime
 from adapter.issue import Issue
 
 
-class GithubIssuesFetcher:
+class IssuesFetcher:
 
     def __init__(self, org: str, github_token: str):
         self.org = org
