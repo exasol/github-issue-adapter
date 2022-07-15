@@ -3,7 +3,7 @@ from typing import List
 import requests
 from string import Template
 import datetime
-from adapter.issue import Issue
+from adapter import Issue
 
 
 class Query:
