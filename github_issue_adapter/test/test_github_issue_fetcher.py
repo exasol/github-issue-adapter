@@ -34,7 +34,9 @@ def test_list_issues(test_config: testing_config.TestConfig, github_client: Gith
     before_creating_issue = test_issue.created_at - timedelta(seconds=1)
     try:
         issues = issue_fetcher.get_issues_of_repo(TEST_REPO_NAME, before_creating_issue)
-        issues_of_test_repo = list(filter(lambda issue: issue.repo == TEST_REPO_NAME, issues))
+        issues_of_test_repo = list(
+            filter(lambda issue: issue.repo == TEST_REPO_NAME, issues)
+        )
         assert len(issues_of_test_repo) == 1
         assert issues_of_test_repo[0].title == test_issue_name
     finally:
